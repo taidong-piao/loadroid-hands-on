@@ -1,16 +1,55 @@
 loadroid:
   requests:
-    status:
-      method: GET
-      # the url to verify host is below
-      # https://demo-dot-impressive-kite-93206.appspot.com/debug-verify-host-{{verification-token}}
-      url: https://demo-dot-impressive-kite-93206.appspot.com/api/1/status
+    default:
+      url:
+        scheme: https
+        host: demo-dot-impressive-kite-93206.appspot.com
+      basic-auth:
+        username: user-1
+        password: pass-1
+
+    generate_2_ids:
+      method: POST
+      url:
+        path: /api/1/id/sonyflake/generate
+      header:
+        content-type: application/json
+      body:
+        howMany: 2
+
+    generate_several_ids:
+      method: POST
+      url:
+        path: /api/1/id/sonyflake/generate
+      header:
+        content-type: application/json
+        x-random-token: << Math.random().toString(36).slice(-8)
+      body:
+        howMany: << $('howMany')
+      before:
+        howMany: "$('mod') ? $('mod') + 3 : 3"
+      after:
+        mod: $('response').json.newIDs[0] % 3
+
   scenarios:
-    status:
-      num-users: 50
-      period: 50
+    generate_ids_randomly:
+      num-users: 200
+      period: 50 # sec
+      wait: [3.5, 5.5] # random sec
+      requests:
+        generate_2_ids: 80
+        generate_several_ids: 40
+
+    generate_ids_sequentially:
+      num-users: 200
+      period: 50 # sec
       loop: true
       requests:
-        - status
+        - generate_2_ids
+        - generate_several_ids
+        - wait: 3.5
+        - generate_2_ids
+
   run:
-    - status
+    - generate_ids_randomly
+    - generate_ids_sequentially
