@@ -6,7 +6,7 @@ loadroid:
         host: demo-dot-impressive-kite-93206.appspot.com
       basic-auth:
         username: user-1
-        password: pass-1
+        password:  << $('secrets')['password']
 
     generate_2_ids:
       method: POST
