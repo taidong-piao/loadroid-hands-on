@@ -33,7 +33,7 @@ loadroid:
 
   scenarios:
     generate_ids_randomly:
-      num-users: 200
+      num-users: 300
       period: 50 # sec
       wait: [3.5, 5.5] # random sec
       requests:
